@@ -36,6 +36,7 @@ const RemoteMain = ({ navigation }: any) => {
   } = useCall();
   console.log("isRemoteAccessAllowed..", isRemoteAccessAllowed)
 
+  
 
   const [isPauseOn, setIsPauseOn] = useState(true);
 
