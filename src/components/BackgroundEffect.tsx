@@ -15,6 +15,7 @@ import { EffectType } from '../context/CallContext';
 interface BackgroundEffectProps {
   onApply: (effect: EffectType) => void;
   currentEffect?: EffectType;
+  disabled?: boolean;
 }
 
 const effects: {
@@ -48,6 +49,7 @@ const effects: {
 const BackgroundEffect: React.FC<BackgroundEffectProps> = ({
   onApply,
   currentEffect,
+  disabled = false,
 }) => {
   const [visible, setVisible] = useState(false);
 
@@ -57,6 +59,13 @@ const BackgroundEffect: React.FC<BackgroundEffectProps> = ({
   useEffect(() => {
     setSelectedEffect(currentEffect || '');
   }, [currentEffect]);
+
+ 
+  useEffect(() => {
+    if (disabled) {
+      setVisible(false);
+    }
+  }, [disabled]);
 
   const getImageSource = () => {
     const found = effects.find(
@@ -68,9 +77,12 @@ const BackgroundEffect: React.FC<BackgroundEffectProps> = ({
 
   return (
     <View>
-   
       <TouchableOpacity
-        style={styles.icon}
+        disabled={disabled}
+        style={[
+          styles.icon,
+          disabled && styles.disabledIcon,
+        ]}
         onPress={() => setVisible(true)}
       >
         <Image
@@ -80,8 +92,11 @@ const BackgroundEffect: React.FC<BackgroundEffectProps> = ({
         />
       </TouchableOpacity>
 
-     
-      <Modal visible={visible} transparent animationType="slide">
+      <Modal
+        visible={visible && !disabled}
+        transparent
+        animationType="slide"
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>
@@ -94,12 +109,16 @@ const BackgroundEffect: React.FC<BackgroundEffectProps> = ({
               numColumns={2}
               renderItem={({ item }) => (
                 <TouchableOpacity
+                  disabled={disabled}
                   style={[
                     styles.effectItem,
                     selectedEffect === item.id &&
                       styles.selectedEffect,
+                    disabled && styles.disabledEffect,
                   ]}
-                  onPress={() => setSelectedEffect(item.id)}
+                  onPress={() =>
+                    setSelectedEffect(item.id)
+                  }
                 >
                   <Image
                     source={
@@ -116,19 +135,28 @@ const BackgroundEffect: React.FC<BackgroundEffectProps> = ({
             />
 
             <TouchableOpacity
-              style={styles.applyBtn}
+              disabled={disabled}
+              style={[
+                styles.applyBtn,
+                disabled &&
+                  styles.disabledApplyBtn,
+              ]}
               onPress={() => {
                 onApply(selectedEffect);
                 setVisible(false);
               }}
             >
-              <Text style={styles.applyText}>Apply</Text>
+              <Text style={styles.applyText}>
+                Apply
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => setVisible(false)}
             >
-              <Text style={styles.closeText}>Cancel</Text>
+              <Text style={styles.closeText}>
+                Cancel
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -147,6 +175,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#2D3037',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  disabledIcon: {
+    opacity: 0.5,
   },
 
   iconImage: {
@@ -190,6 +222,10 @@ const styles = StyleSheet.create({
     borderColor: '#00ff88',
   },
 
+  disabledEffect: {
+    opacity: 0.5,
+  },
+
   effectImage: {
     width: wp(20),
     height: hp(10),
@@ -208,6 +244,10 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginTop: 15,
     alignItems: 'center',
+  },
+
+  disabledApplyBtn: {
+    opacity: 0.5,
   },
 
   applyText: {

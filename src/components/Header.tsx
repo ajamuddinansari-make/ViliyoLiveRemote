@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
 
   boldText: {
-    fontWeight: '800',
+    fontWeight: '600',
   },
 
   normalText: {

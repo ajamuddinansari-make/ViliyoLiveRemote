@@ -1,5 +1,12 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 import { MediaStream } from 'react-native-webrtc';
+import InCallManager from 'react-native-incall-manager';
 
 export type EffectType =
   | ''
@@ -20,19 +27,12 @@ type CallContextType = {
   >;
 
   isCameraOn: boolean;
-  setIsCameraOn: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
-
   isMicOn: boolean;
-  setIsMicOn: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
-
   isSpeakerOn: boolean;
-  setIsSpeakerOn: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+
+  toggleCamera: () => void;
+  toggleMic: () => void;
+  toggleSpeaker: () => void;
 
   cameraPosition: 'front' | 'back';
   setCameraPosition: React.Dispatch<
@@ -71,25 +71,67 @@ export const CallProvider = ({
   const [currentEffect, setCurrentEffect] =
     useState<EffectType>('');
 
+  const toggleMic = useCallback(() => {
+    const audioTrack =
+      localStream?.getAudioTracks?.()[0];
+    if (!audioTrack) return;
+
+    const nextState = !audioTrack.enabled;
+    audioTrack.enabled = nextState;
+    setIsMicOn(nextState);
+  }, [localStream]);
+
+  const toggleCamera = useCallback(() => {
+    const videoTrack =
+      localStream?.getVideoTracks?.()[0];
+    if (!videoTrack) return;
+
+    const nextState = !videoTrack.enabled;
+    videoTrack.enabled = nextState;
+    setIsCameraOn(nextState);
+  }, [localStream]);
+
+  const toggleSpeaker = useCallback(() => {
+    setIsSpeakerOn(prev => {
+      const next = !prev;
+      InCallManager.setForceSpeakerphoneOn(next);
+      return next;
+    });
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      localStream,
+      setLocalStream,
+      isRemoteAccessAllowed,
+      setIsRemoteAccessAllowed,
+      isCameraOn,
+      isMicOn,
+      isSpeakerOn,
+      toggleCamera,
+      toggleMic,
+      toggleSpeaker,
+      cameraPosition,
+      setCameraPosition,
+      currentEffect,
+      setCurrentEffect,
+    }),
+    [
+      localStream,
+      isRemoteAccessAllowed,
+      isCameraOn,
+      isMicOn,
+      isSpeakerOn,
+      toggleCamera,
+      toggleMic,
+      toggleSpeaker,
+      cameraPosition,
+      currentEffect,
+    ]
+  );
+
   return (
-    <CallContext.Provider
-      value={{
-        localStream,
-        setLocalStream,
-        isRemoteAccessAllowed,
-        setIsRemoteAccessAllowed,
-        isCameraOn,
-        setIsCameraOn,
-        isMicOn,
-        setIsMicOn,
-        isSpeakerOn,
-        setIsSpeakerOn,
-        cameraPosition,
-        setCameraPosition,
-        currentEffect,
-        setCurrentEffect,
-      }}
-    >
+    <CallContext.Provider value={value}>
       {children}
     </CallContext.Provider>
   );

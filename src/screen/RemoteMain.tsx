@@ -20,23 +20,21 @@ import { useCall } from '../context/CallContext';
 const RemoteMain = ({ navigation }: any) => {
 
 
-  const {
-    localStream,
-    setLocalStream,
-    isRemoteAccessAllowed,
-    currentEffect,
-    isCameraOn,
-    setIsCameraOn,
-    isMicOn,
-    setIsMicOn,
-    cameraPosition,
-    setCameraPosition,
-      isSpeakerOn,
-  // toggleSpeaker,
-  } = useCall();
+const {
+  localStream,
+  isRemoteAccessAllowed,
+  currentEffect,
+  isCameraOn,
+  isMicOn,
+  cameraPosition,
+  isSpeakerOn,
+  toggleMic,
+  toggleCamera,
+  toggleSpeaker,
+} = useCall();
   console.log("isRemoteAccessAllowed..", isRemoteAccessAllowed)
 
-  
+
 
   const [isPauseOn, setIsPauseOn] = useState(true);
 
@@ -47,57 +45,9 @@ const RemoteMain = ({ navigation }: any) => {
     effect4: ImagePath.BackgroundEffect,
   };
 
-  useEffect(() => {
-    startLocalStream();
+ 
 
-    InCallManager.start({ media: 'video' });
-    InCallManager.setForceSpeakerphoneOn(true);
-
-    return () => {
-      localStream?.getTracks().forEach(track => track.stop());
-      InCallManager.stop();
-    };
-  }, []);
-
-  const startLocalStream = async () => {
-    try {
-      const stream = await mediaDevices.getUserMedia({
-        audio: true,
-        video: {
-          facingMode: cameraPosition,
-          width: 720,
-          height: 1280,
-          frameRate: 30,
-        },
-      });
-
-      setLocalStream(stream);
-    } catch (error) {
-      console.log('Stream error:', error);
-    }
-  };
-
-  const toggleMic = () => {
-    if (!localStream) return;
-    localStream.getAudioTracks().forEach(track => {
-      track.enabled = !track.enabled;
-      setIsMicOn(track.enabled);
-    });
-  };
-
-  const toggleSpeaker = () => {
-    const newState = !isSpeakerOn;
-    // setIsSpeakerOn(newState);
-    InCallManager.setForceSpeakerphoneOn(newState);
-  };
-
-  const toggleCamera = () => {
-    if (!localStream) return;
-    localStream.getVideoTracks().forEach(track => {
-      track.enabled = !track.enabled;
-      setIsCameraOn(track.enabled);
-    });
-  };
+  
 
   const flipCamera = () => {
     if (!localStream) return;
@@ -107,16 +57,18 @@ const RemoteMain = ({ navigation }: any) => {
       }
     });
 
-    // setCameraPosition(prev => (prev === 'front' ? 'back' : 'front'));
+   
   };
 
   return (
     <ImageBackground
       source={ImagePath.backgroundImg}
       style={styles.background}
-      blurRadius={8}
+      blurRadius={18}
     >
-      <SafeAreaView style={styles.safe}>
+      <SafeAreaView style={styles.safe} 
+       edges={['top']}
+      >
         <ScrollView contentContainerStyle={styles.container}>
 
           <View style={styles.topRow}>
@@ -135,37 +87,49 @@ const RemoteMain = ({ navigation }: any) => {
           </View>
 
 
-          <View style={[styles.panel, !isRemoteAccessAllowed && { marginTop: -hp(1) }]}>
+          <View style={[styles.panel, !isRemoteAccessAllowed && {  marginTop: hp(2)}]}>
 
-            <View style={styles.trainerImageMock}>
-              {isRemoteAccessAllowed && localStream && isCameraOn ? (
-                <View style={StyleSheet.absoluteFill}>
-                  <RTCView
-                    streamURL={localStream.toURL()}
-                    style={StyleSheet.absoluteFill}
-                    objectFit="cover"
-                    mirror={cameraPosition === 'front'}
-                  />
-
-                 
-                  {currentEffect !== '' && effectMap[currentEffect] && (
-                    <ImageBackground
-                      source={effectMap[currentEffect]}
+            <View style={[styles.trainerImageMock, isRemoteAccessAllowed && {  backgroundColor: '#2D3440'} ]}>
+              {isRemoteAccessAllowed && localStream ? (
+                isCameraOn ? (
+                  <View style={StyleSheet.absoluteFill}>
+                    <RTCView
+                      streamURL={localStream.toURL()}
                       style={StyleSheet.absoluteFill}
-                      resizeMode="cover"
-                      imageStyle={{ opacity: 0.35 }}
+                      objectFit="cover"
+                      mirror={cameraPosition === 'front'}
                     />
-                  )}
 
-                  <Text style={styles.trainerName}>Trainer Name</Text>
-                </View>
+                    {currentEffect !== '' && effectMap[currentEffect] && (
+                      <ImageBackground
+                        source={effectMap[currentEffect]}
+                        style={StyleSheet.absoluteFill}
+                        resizeMode="cover"
+                        imageStyle={{ opacity: 0.35 }}
+                      />
+                    )}
+
+                    <Text style={styles.trainerName}>Trainer Name</Text>
+                  </View>
+                ) : (
+                  <View style={styles.cameraOffContainer}>
+                    <MaterialCommunityIcons
+                      name="video-off"
+                      size={35}
+                      color="#fff"
+                    />
+                    <Text style={styles.cameraOffText}>Camera Off</Text>
+                  </View>
+                )
               ) : null}
-
             </View>
 
             {isRemoteAccessAllowed && (
               <View style={styles.quickActions}>
-                <TouchableOpacity style={styles.circleIcon} onPress={toggleCamera}>
+                <TouchableOpacity style={[styles.circleIcon, {
+                  backgroundColor: isCameraOn ? '#3a3a3a' : 'red'
+                }]}
+                  onPress={toggleCamera}>
                   <MaterialCommunityIcons
                     name={isCameraOn ? 'video-outline' : 'video-off'}
                     size={22}
@@ -183,7 +147,11 @@ const RemoteMain = ({ navigation }: any) => {
                   <Text style={styles.actionText}>Flip</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.circleIcon} onPress={toggleMic}>
+                <TouchableOpacity style={[styles.circleIcon, {
+                  backgroundColor: isMicOn ? '#3a3a3a' : 'red'
+                }]}
+                  onPress={toggleMic}
+                >
                   <MaterialCommunityIcons
                     name={isMicOn ? 'microphone-outline' : 'microphone-off'}
                     size={22}
@@ -194,7 +162,7 @@ const RemoteMain = ({ navigation }: any) => {
 
                 <TouchableOpacity
                   style={[styles.circleIcon,
-                    { backgroundColor: isSpeakerOn ? '#3a3a3a' : 'red' }
+                  { backgroundColor: isSpeakerOn ? '#3a3a3a' : 'red' }
                   ]}
                   onPress={toggleSpeaker}
                 >
@@ -323,7 +291,7 @@ const RemoteMain = ({ navigation }: any) => {
                     color="#fff"
                   />
                 </TouchableOpacity>
-                <Text style={styles.actionText}>Ok</Text>
+                <Text style={styles.actionText}>Ok / Confirm</Text>
               </View>
 
             </View>
@@ -399,7 +367,7 @@ export default RemoteMain;
 
 const styles = StyleSheet.create({
   background: { flex: 1, backgroundColor: '#1E2228' },
-  safe: { flex: 1, marginTop: 10 },
+  safe: {  marginTop: 10 },
   container: { padding: 16, paddingBottom: 30 },
 
   topRow: {
@@ -412,7 +380,6 @@ const styles = StyleSheet.create({
     width: wp(40),
     height: hp(5),
     backgroundColor: '#2A2A2A',
-
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-evenly',
@@ -524,7 +491,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20
+    padding: 20,
+    backgroundColor:'#3a3a3a'
   },
 
   cameraOffText: { color: '#fff' },

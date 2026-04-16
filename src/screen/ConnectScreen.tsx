@@ -23,27 +23,27 @@ import { useCall } from '../context/CallContext';
 import { BackHandler } from 'react-native';
 
 const ConnectScreen = ({ navigation }: any) => {
-  // const [checked, setChecked] = useState(true);
 
-  // const { localStream, setLocalStream } = useCall();
-const {
-  localStream,
-  setLocalStream,
-  isRemoteAccessAllowed,
-  setIsRemoteAccessAllowed,
-  currentEffect,
-  setCurrentEffect,
-  isMicOn,
-  setIsMicOn,
-  isSpeakerOn,
-  setIsSpeakerOn,
-} = useCall();
+  const {
+    localStream,
+    setLocalStream,
+    isRemoteAccessAllowed,
+    setIsRemoteAccessAllowed,
+    currentEffect,
+    setCurrentEffect,
+    isMicOn,
+    isSpeakerOn,
+    isCameraOn,
+    toggleMic,
+    toggleCamera,
+    toggleSpeaker,
+  } = useCall();
 
-  const [isCameraOn, setIsCameraOn] = useState(true);
- 
+
+
   const [cameraPosition, setCameraPosition] = useState<'front' | 'environment'>('front');
 
-  // const [currentEffect, setCurrentEffect] = useState<string>('');
+
 
 
 
@@ -83,6 +83,7 @@ const {
     return true;
   };
 
+
   const initCallPreview = async () => {
     try {
       const granted = await requestPermissions();
@@ -98,40 +99,25 @@ const {
         },
       });
 
+      const audioTrack = stream.getAudioTracks()[0];
+      const videoTrack = stream.getVideoTracks()[0];
+
+      if (audioTrack) {
+        audioTrack.enabled = isMicOn;
+      }
+
+      if (videoTrack) {
+        videoTrack.enabled = isCameraOn;
+      }
+
       setLocalStream(stream);
 
       InCallManager.start({ media: 'video' });
-      InCallManager.setForceSpeakerphoneOn(true);
+      InCallManager.setForceSpeakerphoneOn(isSpeakerOn);
     } catch (error) {
       console.log('WebRTC preview error:', error);
     }
   };
-
-  const toggleCamera = () => {
-    if (!localStream) return;
-
-    localStream.getVideoTracks().forEach(track => {
-      track.enabled = !track.enabled;
-      setIsCameraOn(track.enabled);
-    });
-  };
-
-  const toggleMic = () => {
-    if (!localStream) return;
-
-    localStream.getAudioTracks().forEach(track => {
-      track.enabled = !track.enabled;
-      setIsMicOn(track.enabled);
-    });
-  };
-
-  const toggleSpeaker = () => {
-    const newState = !isSpeakerOn;
-    setIsSpeakerOn(newState);
-    InCallManager.setForceSpeakerphoneOn(newState);
-  };
-
-
 
   const remoteMain = () => {
     navigation.navigate('RemoteMain');
@@ -220,12 +206,24 @@ const {
 
             <View style={styles.group}>
 
+              <TouchableOpacity style={styles.icon}>
+                <MaterialCommunityIcons
+                  name="chevron-up"
+                  size={28}
+                  color="#fff"
+                />
+              </TouchableOpacity>
 
               <TouchableOpacity
+                disabled={!isRemoteAccessAllowed}
                 style={[
                   styles.icon,
                   isCameraOn && styles.activeIcon,
-                  { backgroundColor: isCameraOn ? '#3a3a3a' : 'red' },
+                  {
+                    backgroundColor: !isRemoteAccessAllowed ? '#666' : isCameraOn ? '#3a3a3a' : 'red',
+                    opacity: isRemoteAccessAllowed ? 1 : 0.5,
+
+                  }
                 ]}
                 onPress={toggleCamera}
               >
@@ -235,30 +233,49 @@ const {
                   color="#fff"
                 />
               </TouchableOpacity>
+
             </View>
 
-
-            <TouchableOpacity
-              style={[
-                styles.icon, isSpeakerOn && styles.activeIcon,
-                { backgroundColor: isSpeakerOn ? '#3a3a3a' : 'red' },
-              ]}
-              onPress={toggleSpeaker}
-            >
-              <MaterialCommunityIcons
-                name={isSpeakerOn ? 'volume-high' : 'volume-off'}
-                size={28}
-                color="#fff"
-              />
-            </TouchableOpacity>
-
+            <View>
+              <TouchableOpacity
+              disabled={!isRemoteAccessAllowed}
+                style={[
+                  styles.icon, isSpeakerOn && styles.activeIcon,
+                  {backgroundColor : !isRemoteAccessAllowed ? '#666' : isSpeakerOn ? '#3a3a3a' : 'red', 
+                    opacity: isRemoteAccessAllowed ? 1 : 0.5,
+                  }
+                  
+                ]}
+                onPress={toggleSpeaker}
+              >
+                <MaterialCommunityIcons
+                  name={isSpeakerOn ? 'volume-high' : 'volume-off'}
+                  size={28}
+                  color="#fff"
+                />
+              </TouchableOpacity>
+            </View>
 
             <View style={styles.group}>
+
+
+              <TouchableOpacity style={styles.icon}>
+                <MaterialCommunityIcons
+                  name="chevron-up"
+                  size={28}
+                  color="#fff"
+                />
+              </TouchableOpacity>
+
+
               <TouchableOpacity
+              disabled={!isRemoteAccessAllowed}
                 style={[
                   styles.icon,
                   isMicOn && styles.activeIcon,
-                  { backgroundColor: isMicOn ? '#3a3a3a' : 'red' },
+                  {backgroundColor : !isRemoteAccessAllowed ? '#666' : isMicOn ? '#3a3a3a' : 'red', 
+                opacity: isRemoteAccessAllowed ? 1 : 0.5,
+                  }
                 ]}
                 onPress={toggleMic}
               >
@@ -270,11 +287,13 @@ const {
               </TouchableOpacity>
             </View>
 
-
+         
             <BackgroundEffect
               currentEffect={currentEffect}
               onApply={setCurrentEffect}
+              disabled={!isRemoteAccessAllowed}
             />
+          
           </View>
         </View>
 
@@ -354,15 +373,17 @@ const styles = StyleSheet.create({
 
   controls: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     padding: 15,
     backgroundColor: '#2c2c2c',
   },
 
   group: {
+    width: wp(20),
     flexDirection: 'row',
     backgroundColor: '#2D3037',
     borderRadius: 25,
+
   },
 
   icon: {

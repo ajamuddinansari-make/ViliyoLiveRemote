@@ -12,5 +12,12 @@ export const ImagePath = {
     Group : require('./Images/groups_2.png'),
     Participant : require('./Images/group.png'),
     Task : require('./Images/task.png'),
-    Back : require('./Images/Back.png')
+    Back : require('./Images/Back.png'),
+    Edit : require('./Images/border_color.png'),
+    Play : require('./Images/motion_play.png'),
+    Pause : require('./Images/motion_photos_paused.png'),
+    Drama : require('./Images/drama1.png'),
+    Search : require('./Images/search.png'),
+    Vector : require('./Images/Vector.png'),
+    Poll : require('./Images/Group1.png')
 }
