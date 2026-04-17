@@ -18,6 +18,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import BackgroundEffect from '../components/BackgroundEffect'
 import BottomControlPanel from '../components/BottomControlPanel'
+import TrainerConsole from '../components/TrainerConsole'
 
 
 const AvSetting = ({ navigation }: any) => {
@@ -36,6 +37,7 @@ const AvSetting = ({ navigation }: any) => {
         toggleMic,
         toggleCamera,
         toggleSpeaker,
+        toggleFlip
     } = useCall();
     console.log("isRemoteAccessAllowed..", isRemoteAccessAllowed)
 
@@ -45,6 +47,8 @@ const AvSetting = ({ navigation }: any) => {
         effect3: ImagePath.BackgroundEffect,
         effect4: ImagePath.BackgroundEffect,
     };
+
+
 
     const TrainerCard = ({ title }: any) => (
 
@@ -56,13 +60,7 @@ const AvSetting = ({ navigation }: any) => {
                 {title?.split(' ').slice(1).join(' ')}
             </Text>
             <View style={styles.card}>
-
-
                 <View style={styles.cardContent}>
-
-
-
-
 
                     <View style={styles.trainerImageMock}>
                         {isRemoteAccessAllowed && localStream && isCameraOn ? (
@@ -73,7 +71,6 @@ const AvSetting = ({ navigation }: any) => {
                                     objectFit="cover"
                                     mirror={cameraPosition === 'front'}
                                 />
-
 
                                 {currentEffect !== '' && effectMap[currentEffect] && (
                                     <ImageBackground
@@ -127,11 +124,11 @@ const AvSetting = ({ navigation }: any) => {
 
                         </View>
 
-
-
                         <View style={{ flexDirection: 'row', marginTop: 5, justifyContent: 'space-between' }}>
                             <View>
-                                <TouchableOpacity style={styles.circleBtn} >
+                                <TouchableOpacity style={[styles.circleBtn, { backgroundColor: isSpeakerOn ? '#3a3a3a' : 'red' }]}
+                                    onPress={toggleSpeaker}
+                                >
                                     <MaterialCommunityIcons
                                         name={isSpeakerOn ? 'volume-high' : 'volume-off'}
                                         size={22}
@@ -150,7 +147,9 @@ const AvSetting = ({ navigation }: any) => {
                                     />
                                 </TouchableOpacity>
 
-                                <TouchableOpacity style={styles.circleBtn} >
+                                <TouchableOpacity style={[styles.circleBtn, { backgroundColor: isMicOn ? '#3a3a3a' : 'red' }]}
+                                    onPress={toggleMic}
+                                >
                                     <MaterialCommunityIcons
                                         name={isMicOn ? 'microphone-outline' : 'microphone-off'}
                                         size={22}
@@ -161,9 +160,6 @@ const AvSetting = ({ navigation }: any) => {
 
                             </View>
                         </View>
-
-
-
 
                     </View>
                 </View>
@@ -177,7 +173,6 @@ const AvSetting = ({ navigation }: any) => {
             style={styles.background}
         >
             <SafeAreaView style={{ flex: 1 }}>
-
                 <Header
                     title="AV SETTINGS"
                     onBackPress={() => navigation.goBack()}
@@ -185,7 +180,20 @@ const AvSetting = ({ navigation }: any) => {
 
                 <View style={{ flex: 1 }}>
 
-                    <TrainerCard title="Trainer’s Console" />
+                  
+                    <TrainerConsole
+                        title="Trainer’s Console"
+                        streamURL={localStream?.toURL()}
+                        isCameraOn={isCameraOn}
+                        isMicOn={isMicOn}
+                        isSpeakerOn={isSpeakerOn}
+                        cameraPosition={cameraPosition}
+                        currentEffect={currentEffect}
+                        onToggleCamera={toggleCamera}
+                        onToggleMic={toggleMic}
+                        onToggleSpeaker={toggleSpeaker}
+                        onFlipCamera={toggleFlip}
+                    />
 
                     {isRemoteAccessAllowed && (
                         <TrainerCard title="Trainer’s Remote" />
@@ -193,16 +201,13 @@ const AvSetting = ({ navigation }: any) => {
 
                 </View>
 
-
-           
-
             </SafeAreaView>
-     <BottomControlPanel
-                    onForceMute={() => console.log('Force Mute')}
-                    onSystemMute={() => console.log('System Mute')}
-                    onAnnouncement={() => console.log('Announcement')}
-                    onConfirm={() => console.log('Confirm')}
-                />
+            <BottomControlPanel
+                onForceMute={() => console.log('Force Mute')}
+                onSystemMute={() => console.log('System Mute')}
+                onAnnouncement={() => console.log('Announcement')}
+                onConfirm={() => console.log('Confirm')}
+            />
         </ImageBackground>
     )
 }
@@ -252,9 +257,6 @@ const styles = StyleSheet.create({
 
     },
 
-
-
-
     trainerImageMock: {
         width: wp(40),
         height: hp(12),
@@ -277,8 +279,8 @@ const styles = StyleSheet.create({
     },
 
 
-  
-  
+
+
     group: {
         width: wp(23),
         height: hp(5.5),

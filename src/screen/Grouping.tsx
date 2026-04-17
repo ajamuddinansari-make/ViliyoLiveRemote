@@ -55,7 +55,7 @@ const Grouping = ({ navigation }: any) => {
 
   const renderLearner = (_: any, index: number) => (
     <View style={styles.learnerItem} key={index}>
-      <Image source={ImagePath.user1} style={styles.avatar} />
+      <Image source={ImagePath.Participant} style={styles.avatar} />
       <Text style={styles.learnerText}>{'<Learner Name>'}</Text>
     </View>
   )
@@ -105,133 +105,7 @@ const Grouping = ({ navigation }: any) => {
           </TouchableOpacity>
 
 
-          {/* <LinearGradient
-            colors={['#373737', '#1B1F24', '#111']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.bottomPanel}
-          >
-            <View style={styles.cameraOffContainer}>
-              <TouchableOpacity
-                style={[styles.circleIcon, {
-
-                }]}
-              >
-                <MaterialCommunityIcons
-                  name={isCameraOn ? 'video-outline' : 'video-off'}
-                  size={25}
-                  color="#fff"
-                />
-                <Text style={styles.actionText}>Camera </Text>
-
-              </TouchableOpacity>
-
-
-              <TouchableOpacity style={styles.circleIcon}
-
-              >
-                <MaterialCommunityIcons
-                  name="camera-flip-outline"
-                  size={22}
-                  color="#fff"
-                />
-                <Text style={styles.actionText}>Flip</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.circleIcon}
-
-              >
-                <MaterialCommunityIcons
-                  name={isMicOn ? 'microphone-outline' : 'microphone-off'}
-                  size={22}
-                  color="#fff"
-                />
-                <Text style={styles.actionText}>Mic</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.circleIcon}
-
-              >
-                <MaterialCommunityIcons
-                  name={isSpeakerOn ? 'volume-high' : 'volume-off'}
-                  size={22}
-                  color="#fff"
-                />
-                <Text style={styles.actionText}>Speaker</Text>
-              </TouchableOpacity>
-
-
-            </View>
-
-            <View style={styles.cameraOffContainer}>
-              <View>
-                <TouchableOpacity
-                  style={styles.circleBtnBottom}
-                >
-                  <MaterialCommunityIcons
-                    name="account-multiple-remove"
-                    size={35}
-                    color="#fff"
-                  />
-
-                </TouchableOpacity>
-
-                <Text style={styles.roundText}>Force Mute </Text>
-              </View>
-
-              <View>
-                <TouchableOpacity
-                  style={styles.circleBtnBottom}
-                >
-                  <MaterialCommunityIcons
-                    name="microphone-outline"
-                    size={22}
-                    color="#fff"
-                  />
-                </TouchableOpacity>
-                <Text style={styles.roundText}>System Mute </Text>
-              </View>
-
-
-              <View>
-                <TouchableOpacity
-                  style={styles.circleBtnBottom}
-                >
-                  <MaterialCommunityIcons
-                    name="bullhorn-outline"
-                    size={22}
-                    color="#fff"
-                  />
-
-                </TouchableOpacity>
-                <Text style={styles.roundText}>Announcement</Text>
-              </View>
-
-
-
-              <View>
-                <TouchableOpacity
-                  style={styles.circleBtnBottom}
-                >
-                  <MaterialCommunityIcons
-                    name="check-circle-outline"
-                    size={25}
-                    color="#fff"
-                  />
-
-                </TouchableOpacity>
-                <Text style={styles.roundText}>Ok / confirm</Text>
-
-              </View>
-
-
-
-            </View>
-
-
-
-
-          </LinearGradient> */}
+         
         </View>
 
       </SafeAreaView>
@@ -315,10 +189,11 @@ const styles = StyleSheet.create({
   },
 
   avatar: {
-    width: 28,
-    height: 28,
+    width: 25,
+    height: 25,
     borderRadius: 14,
     marginRight: 8,
+    resizeMode:'center'
   },
 
   learnerText: {
@@ -351,44 +226,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  bottomPanel: {
-    width: '100%',
-    height: hp(20),
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    bottom: Platform.OS === 'ios' ? -hp(3.5) : 0,
-
-  },
-  cameraOffContainer: {
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    flexDirection: 'row'
-  },
-  circleIcon: {
-    width: wp(15),
-    height: hp(6),
-    backgroundColor: '#2A2A2A',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: hp(2),
-    borderRadius: 10
-  },
-  actionText: { color: '#fff', fontSize: 9 },
-
-  circleBtnBottom: {
-    width: wp(15),
-    height: hp(7),
-    borderRadius: 35,
-    backgroundColor: '#2A2A2A',
-    margin: 8,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-
-  roundText: {
-    color: '#fff',
-    fontSize: 10,
-    textAlign: 'center',
-  },
 
 })

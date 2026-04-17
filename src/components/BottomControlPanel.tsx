@@ -25,9 +25,12 @@ const BottomControlPanel: React.FC<Props> = ({
     toggleCamera,
     toggleMic,
     toggleSpeaker,
+    toggleFlip,
+    isRemoteAccessAllowed,
   } = useCall();
+ console.log("isRemoteAccessAllowed..", isRemoteAccessAllowed)
+ const disabled = !isRemoteAccessAllowed; 
 
-  
   return (
     <LinearGradient
       colors={['#515050', '#1B1F24', '#111']}
@@ -39,7 +42,10 @@ const BottomControlPanel: React.FC<Props> = ({
      
       <View style={[styles.cameraOffContainer,{justifyContent:'space-evenly'}]}>
 
-        <TouchableOpacity style={styles.circleIcon} onPress={toggleCamera}>
+        <TouchableOpacity style={[styles.circleIcon, disabled && styles.disabled, {backgroundColor: isCameraOn ? '#3a3a3a' : 'red'}]}
+         onPress={toggleCamera} 
+        disabled={disabled}
+        >
           <MaterialCommunityIcons
             name={isCameraOn ? 'video-outline' : 'video-off'}
             size={25}
@@ -48,7 +54,10 @@ const BottomControlPanel: React.FC<Props> = ({
           <Text style={styles.actionText}>Camera</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.circleIcon}>
+        <TouchableOpacity style={[styles.circleIcon, disabled && styles.disabled]}
+         disabled={disabled}
+         onPress={toggleFlip}
+        >
           <MaterialCommunityIcons
             name="camera-flip-outline"
             size={22}
@@ -57,7 +66,10 @@ const BottomControlPanel: React.FC<Props> = ({
           <Text style={styles.actionText}>Flip</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.circleIcon} onPress={toggleMic}>
+        <TouchableOpacity style={[styles.circleIcon, disabled && styles.disabled]}
+         disabled={disabled}
+         onPress={toggleMic}
+         >
           <MaterialCommunityIcons
             name={isMicOn ? 'microphone-outline' : 'microphone-off'}
             size={22}
@@ -66,7 +78,9 @@ const BottomControlPanel: React.FC<Props> = ({
           <Text style={styles.actionText}>Mic</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.circleIcon} onPress={toggleSpeaker}>
+        <TouchableOpacity  style={[styles.circleIcon, disabled && styles.disabled]}
+         disabled={disabled}
+        onPress={toggleSpeaker}>
           <MaterialCommunityIcons
             name={isSpeakerOn ? 'volume-high' : 'volume-off'}
             size={22}
@@ -148,8 +162,6 @@ const BottomControlPanel: React.FC<Props> = ({
 export default BottomControlPanel;
 const styles = StyleSheet.create({
   bottomPanel: {
-    // paddingVertical: 15,
-    // paddingHorizontal: 30,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingTop:20,
@@ -202,4 +214,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: 'center',
   },
+  disabled: {
+  opacity: 0.4,
+}
 });

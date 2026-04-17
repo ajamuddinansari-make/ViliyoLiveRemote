@@ -33,6 +33,7 @@ type CallContextType = {
   toggleCamera: () => void;
   toggleMic: () => void;
   toggleSpeaker: () => void;
+  toggleFlip: () => void;
 
   cameraPosition: 'front' | 'back';
   setCameraPosition: React.Dispatch<
@@ -99,6 +100,24 @@ export const CallProvider = ({
     });
   }, []);
 
+  const toggleFlip = useCallback(() => {
+     const videoTrack = localStream?.getVideoTracks?.()[0];
+
+  if (videoTrack && typeof videoTrack._switchCamera === 'function') {
+  
+    videoTrack._switchCamera();
+
+    setCameraPosition(prev =>
+      prev === 'front' ? 'back' : 'front'
+    );
+  } else {
+   
+    setCameraPosition(prev =>
+      prev === 'front' ? 'back' : 'front'
+    );
+  }
+  },[localStream])
+
   const value = useMemo(
     () => ({
       localStream,
@@ -111,6 +130,7 @@ export const CallProvider = ({
       toggleCamera,
       toggleMic,
       toggleSpeaker,
+      toggleFlip,
       cameraPosition,
       setCameraPosition,
       currentEffect,
@@ -125,6 +145,7 @@ export const CallProvider = ({
       toggleCamera,
       toggleMic,
       toggleSpeaker,
+      toggleFlip,
       cameraPosition,
       currentEffect,
     ]

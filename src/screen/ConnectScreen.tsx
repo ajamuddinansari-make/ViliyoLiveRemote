@@ -221,7 +221,7 @@ const ConnectScreen = ({ navigation }: any) => {
                   isCameraOn && styles.activeIcon,
                   {
                     backgroundColor: !isRemoteAccessAllowed ? '#666' : isCameraOn ? '#3a3a3a' : 'red',
-                    opacity: isRemoteAccessAllowed ? 1 : 0.5,
+                    opacity: isRemoteAccessAllowed ? 1 : 0.5,borderColor: !isRemoteAccessAllowed ?'#2D3037':'#f5c542'
 
                   }
                 ]}
@@ -242,7 +242,7 @@ const ConnectScreen = ({ navigation }: any) => {
                 style={[
                   styles.icon, isSpeakerOn && styles.activeIcon,
                   {backgroundColor : !isRemoteAccessAllowed ? '#666' : isSpeakerOn ? '#3a3a3a' : 'red', 
-                    opacity: isRemoteAccessAllowed ? 1 : 0.5,
+                    opacity: isRemoteAccessAllowed ? 1 : 0.5,borderColor: !isRemoteAccessAllowed ?'#2D3037':'#f5c542'
                   }
                   
                 ]}
@@ -274,7 +274,7 @@ const ConnectScreen = ({ navigation }: any) => {
                   styles.icon,
                   isMicOn && styles.activeIcon,
                   {backgroundColor : !isRemoteAccessAllowed ? '#666' : isMicOn ? '#3a3a3a' : 'red', 
-                opacity: isRemoteAccessAllowed ? 1 : 0.5,
+                opacity: isRemoteAccessAllowed ? 1 : 0.5, borderColor: !isRemoteAccessAllowed ?'#2D3037':'#f5c542'
                   }
                 ]}
                 onPress={toggleMic}

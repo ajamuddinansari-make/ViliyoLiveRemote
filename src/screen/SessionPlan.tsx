@@ -93,14 +93,16 @@ const SessionPlan = ({ navigation }: any) => {
       source={ImagePath.backgroundImg}
       style={styles.background}
     >
-      <SafeAreaView style={{ flex: 1,  }}>
+      <SafeAreaView style={{ flex: 1,  }}
+         edges={['top']}
+      >
 
         <Header
           title="SESSION PLAN"
           onBackPress={() => navigation.goBack()}
         />
 
-        <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: hp(18), margin:10 }}>
 
 
 
@@ -144,35 +146,6 @@ const SessionPlan = ({ navigation }: any) => {
 
         </ScrollView>
 
-        {/* <LinearGradient
-          colors={['#595757', '#2f3337', '#1b1b1b']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={styles.bottomPanel}
-        >
-
-          <View style={styles.cameraOffContainer}>
-
-            <TouchableOpacity
-              style={[styles.circleIcon, {
-
-              }]}
-            >
-              <MaterialCommunityIcons
-                name={isCameraOn ? 'video-outline' : 'video-off'}
-                size={25}
-                color="#fff"
-              />
-              <Text style={styles.actionText}>Camera </Text>
-
-            </TouchableOpacity>
-          </View>
-
-
-
-        </LinearGradient> */}
-
-       {/* <BottomControlPanel /> */}
 
       </SafeAreaView>
        <BottomControlPanel

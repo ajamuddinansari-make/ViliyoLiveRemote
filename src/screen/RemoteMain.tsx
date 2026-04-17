@@ -368,7 +368,7 @@ export default RemoteMain;
 const styles = StyleSheet.create({
   background: { flex: 1, backgroundColor: '#1E2228' },
   safe: {  marginTop: 10 },
-  container: { padding: 16, paddingBottom: 30 },
+  container: { padding: 16, paddingBottom: 60 },
 
   topRow: {
     flexDirection: 'row',
