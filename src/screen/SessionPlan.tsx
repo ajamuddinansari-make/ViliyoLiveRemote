@@ -1,217 +1,186 @@
+import React, { useState } from 'react';
 import {
   View,
   Text,
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
-  Platform,
-} from 'react-native'
-import React from 'react'
-import { ImagePath } from '../assets/ImagePath'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import Header from '../components/Header'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { Image } from 'react-native'
-import { hp, wp } from '../components/Responsive'
-import LinearGradient from 'react-native-linear-gradient';
-import { useCall } from '../context/CallContext'
-import BottomControlPanel from '../components/BottomControlPanel'
+  Image,
+} from 'react-native';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
+import DraggableFlatList from 'react-native-draggable-flatlist';
+
+import Header from '../components/Header';
+import BottomControlPanel from '../components/BottomControlPanel';
+import { ImagePath } from '../assets/ImagePath';
+import { hp, wp } from '../components/Responsive';
 
 const SessionPlan = ({ navigation }: any) => {
 
-  const {
-    localStream,
-    isRemoteAccessAllowed,
-    isCameraOn,
-    cameraPosition,
-    isMicOn,
-    isSpeakerOn,
-    setCameraPosition,
-    currentEffect,
-    setCurrentEffect,
-    toggleMic,
-    toggleCamera,
-    toggleSpeaker,
-  } = useCall();
-  console.log("isRemoteAccessAllowed..", isRemoteAccessAllowed)
+  const [data, setData] = useState([
+    { id: 'h1', type: 'header', title: 'SEGMENT 1' },
+    { id: '1', type: 'item', title: 'ROLE PLAY', subtitle: '<Role Play Title>', image: ImagePath.Drama },
+    { id: '2', type: 'item', title: 'ROLE PLAY', subtitle: '<Role Play Title>', image: ImagePath.Drama },
 
-  const Card = ({ active = false, title, subtitle, icon, image }: any) => (
-    <View style={{ flexDirection: 'row', width: wp(80), }}>
-
-      <View style={[styles.card, active && styles.activeCard]}>
-        <View style={styles.left}>
-
-          <Image source={image} style={styles.editBtn} />
-          <Text style={styles.time}>120 mins</Text>
-        </View>
+    { id: 'h2', type: 'header', title: 'SEGMENT 2' },
+    { id: '3', type: 'item', title: 'CASE STUDY', subtitle: '<Case Study Title>', image: ImagePath.Search },
+    { id: '4', type: 'item', title: 'GROUP DISCUSSION', subtitle: '<GD Title>', image: ImagePath.Vector },
+    { id: '5', type: 'item', title: 'POLL', subtitle: '<Poll Title>', image: ImagePath.Poll },
+  ]);
 
 
-        <View style={styles.center}>
-          <Text style={styles.cardTitle}>
-            <Text style={{ fontWeight: 'bold' }}>{title} </Text>
-          </Text>
-          <Text style={styles.subTitle}>{subtitle}</Text>
-        </View>
+  const [playingId, setPlayingId] = useState<string | null>(null);
+
+  const togglePlay = (id: string) => {
+    setPlayingId(prev => (prev === id ? null : id));
+  };
+
+  const Card = ({ item, drag, isActive }: any) => (
+    <TouchableOpacity
+      onLongPress={item.type === 'item' ? drag : undefined}
+      disabled={isActive || item.type === 'header'}
+      style={{ width: wp(90), alignSelf: 'center', }}
+    >
 
 
-        <View style={styles.right}>
-          <TouchableOpacity style={styles.iconBtn}>
+      {item.type === 'header' ? (
+        <Text style={styles.sectionTitle}>{item.title}</Text>
+      ) : (
 
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+
+          <View style={[styles.card, isActive && styles.activeCard]}>
+
+            <View style={styles.left}>
+              <Image source={item.image} style={styles.editBtn} />
+              <Text style={styles.time}>120 mins</Text>
+            </View>
+
+            <View style={styles.center}>
+              <Text style={styles.cardTitle}>
+                <Text style={{ fontWeight: 'bold' }}>{item.title} </Text>
+              </Text>
+              <Text style={styles.subTitle}>{item.subtitle}</Text>
+            </View>
+       <View style={styles.verticalLine} />
+            <View style={styles.right}>
+              <TouchableOpacity style={styles.iconBtn}>
+                <Image source={ImagePath.Edit} style={styles.editBtn} />
+              </TouchableOpacity>
+            </View>
+
+          </View>
+
+
+          <TouchableOpacity
+            style={[
+              styles.playBtn,
+              playingId === item.id && styles.playBtnActive,
+            ]}
+            onPress={() => togglePlay(item.id)}
+          >
             <Image
-              source={ImagePath.Edit}
-              style={styles.editBtn}
+              source={
+                playingId === item.id
+                  ? ImagePath.Pause
+                  : ImagePath.Play
+              }
+              style={styles.playImg}
             />
           </TouchableOpacity>
 
         </View>
-
-      </View>
-      <View style={{ marginLeft: -10 }} >
-        <TouchableOpacity style={[styles.playBtn, active && styles.pauseBtn]}>
-
-          <Image
-            source={active ? ImagePath.Play : ImagePath.Play}
-            style={styles.playImg}
-          />
-
-        </TouchableOpacity>
-      </View>
-    </View>
-  )
-
-  const Section = ({ title, children }: any) => (
-    <View style={{ marginTop: 25 }}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      {children}
-    </View>
-  )
+      )}
+    </TouchableOpacity>
+  );
 
   return (
-    <ImageBackground
-      source={ImagePath.backgroundImg}
-      style={styles.background}
-    >
-      <SafeAreaView style={{ flex: 1,  }}
-         edges={['top']}
-      >
+    <ImageBackground source={ImagePath.backgroundImg} style={styles.background}>
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
 
         <Header
           title="SESSION PLAN"
           onBackPress={() => navigation.goBack()}
         />
 
-        <ScrollView contentContainerStyle={{ paddingBottom: hp(18), margin:10 }}>
-
-
-
-
-
-          <Section title="SEGMENT 1">
-            <Card
-              active
-              title="ROLE PLAY"
-              subtitle="<Role Play Title>"
-              image={ImagePath.Drama}
-            />
-
-            <Card
-              title="ROLE PLAY"
-              subtitle="<Role Play Title>"
-              image={ImagePath.Drama}
-            />
-          </Section>
-
-
-          <Section title="SEGMENT 2">
-            <Card
-              title="CASE STUDY"
-              subtitle="<Case Study Title>"
-              image={ImagePath.Search}
-            />
-
-            <Card
-              title="GROUP DISCUSSION"
-              subtitle="<GD Title>"
-              image={ImagePath.Vector}
-            />
-
-            <Card
-              title="POLL"
-              subtitle="<Poll Title>"
-              image={ImagePath.Poll}
-            />
-          </Section>
-
-        </ScrollView>
-
+        <DraggableFlatList
+          data={data}
+          keyExtractor={(item) => item.id}
+          onDragEnd={({ data }) => setData(data)}
+          renderItem={({ item, drag, isActive }) => (
+            <Card item={item} drag={drag} isActive={isActive} />
+          )}
+        />
 
       </SafeAreaView>
-       <BottomControlPanel
-                    onForceMute={() => console.log('Force Mute')}
-                    onSystemMute={() => console.log('System Mute')}
-                    onAnnouncement={() => console.log('Announcement')}
-                    onConfirm={() => console.log('Confirm')}
-                />
-    
-    </ImageBackground>
-  )
-}
 
-export default SessionPlan
+      <BottomControlPanel
+        onForceMute={() => console.log('Force Mute')}
+        onSystemMute={() => console.log('System Mute')}
+        onAnnouncement={() => console.log('Announcement')}
+        onConfirm={() => console.log('Confirm')}
+      />
+    </ImageBackground>
+  );
+};
+
+export default SessionPlan;
 
 const styles = StyleSheet.create({
-  background: { flex: 1, backgroundColor: '#1E2228', tintColor: '#373737' },
-
-  mainTitle: {
-    textAlign: 'center',
-    fontSize: 26,
-    color: '#fff',
-    marginTop: 10,
+  background: {
+    flex: 1,
+    backgroundColor: '#1E2228',
   },
 
   sectionTitle: {
     color: '#ccc',
     marginLeft: 20,
+    marginTop: 20,
     marginBottom: 10,
+    fontSize: 14,
   },
 
   card: {
-    width: wp(75),
+    width: wp(70),
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#35363C',
-    marginHorizontal: 15,
-    marginBottom: 12,
     borderRadius: 12,
-    padding: 10,
+    padding: 3,
   },
 
   activeCard: {
-    backgroundColor: '#6b5b2c',
-    width: wp(75),
-
+    // backgroundColor: '#6b5b2c',
   },
 
+  playBtnActive: {
+    borderColor: '#6b5b2c',
+  },
   left: {
     alignItems: 'center',
+    marginLeft:5
   },
 
   time: {
     color: '#ccc',
-    fontSize: 12,
+    fontSize: 10,
     marginTop: 5,
   },
 
   center: {
     flex: 1,
     paddingHorizontal: 10,
+    alignItems:'flex-end',
+    borderRightWidth:1,
+    borderColor:'#fff',
+    marginRight:5
   },
 
   cardTitle: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 11,
   },
 
   subTitle: {
@@ -221,10 +190,8 @@ const styles = StyleSheet.create({
   },
 
   right: {
-    width: wp(20),
+    width: wp(10),
     alignItems: 'center',
-  // backgroundColor:'red'
-  
   },
 
   iconBtn: {
@@ -233,13 +200,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 50
   },
 
   editBtn: {
     width: wp(6),
     height: hp(2.5),
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
 
   playBtn: {
@@ -250,44 +216,20 @@ const styles = StyleSheet.create({
     borderColor: '#888',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 3
+    marginLeft: 10,
+    marginBottom: 5,
+    marginTop:5
   },
 
-  pauseBtn: {
-    borderColor: '#f0c040',
-  },
   playImg: {
     width: wp(8),
     height: hp(5),
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
+  verticalLine:{
+    width:1, 
+    height:50,
+    color:'red'
 
-  bottomPanel: {
-    width: '100%',
-    height: hp(20),
-    marginTop: 'auto',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    bottom: Platform.OS === 'ios' ? -hp(3.5) : 0,
-
-  },
-
-  cameraOffContainer: {
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    flexDirection: 'row'
-  },
-
-
-  circleIcon: {
-    width: wp(15),
-    height: hp(6),
-    backgroundColor: '#2A2A2A',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: hp(2),
-    borderRadius: 10
-  },
-  actionText: { color: '#fff', fontSize: 9 },
-
-})
+  }
+});
