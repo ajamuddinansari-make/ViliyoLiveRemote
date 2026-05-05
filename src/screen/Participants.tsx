@@ -29,15 +29,17 @@ const participantsData = [
             { id: '1', name: 'Trainee Name', image: ImagePath.user1 },
             { id: '2', name: 'Trainee Name', image: ImagePath.user2 },
             { id: '3', name: 'Trainee Name', image: ImagePath.user3 },
+            {id : '4', name: 'Trainer Name', image: ImagePath.user4 },
         ],
     },
     {
         id: '2',
         groupName: 'Group Name',
         members: [
-            { id: '4', name: 'Trainee Name', image: ImagePath.user1 },
-            { id: '5', name: 'Trainee Name', image: ImagePath.user2 },
-            { id: '6', name: 'Trainee Name', image: ImagePath.user3 },
+            { id: '5', name: 'Trainee Name', image: ImagePath.user1 },
+            { id: '6', name: 'Trainee Name', image: ImagePath.user2 },
+            { id: '7', name: 'Trainee Name', image: ImagePath.user3 },
+            { id: '8', name: 'Trainee Name', image: ImagePath.user4 },
         ],
     },
 ]

@@ -9,7 +9,7 @@ import {
   ScrollView,
   Platform,
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ImagePath } from '../assets/ImagePath'
 import Header from '../components/Header'
@@ -18,6 +18,7 @@ import { hp, wp } from '../components/Responsive'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useCall } from '../context/CallContext';
 import BottomControlPanel from '../components/BottomControlPanel'
+import AnnouncementModal from '../components/AnnouncementModal'
 
 
 
@@ -52,6 +53,7 @@ const Grouping = ({ navigation }: any) => {
     toggleSpeaker,
   } = useCall();
   console.log("isRemoteAccessAllowed..", isRemoteAccessAllowed)
+  const [showAnnouncement, setShowAnnouncement] = useState(false);
 
   const renderLearner = (_: any, index: number) => (
     <View style={styles.learnerItem} key={index}>
@@ -105,16 +107,25 @@ const Grouping = ({ navigation }: any) => {
           </TouchableOpacity>
 
 
-         
+
         </View>
 
       </SafeAreaView>
-       <BottomControlPanel
-                    onForceMute={() => console.log('Force Mute')}
-                    onSystemMute={() => console.log('System Mute')}
-                    onAnnouncement={() => console.log('Announcement')}
-                    onConfirm={() => console.log('Confirm')}
-                />
+      <BottomControlPanel
+        onForceMute={() => console.log('Force Mute')}
+        onSystemMute={() => console.log('System Mute')}
+        onAnnouncement={() => setShowAnnouncement(true)}
+        onConfirm={() => console.log('Confirm')}
+      />
+
+      <AnnouncementModal
+        visible={showAnnouncement}
+        onClose={() => setShowAnnouncement(false)}
+        onSend={() => {
+          console.log('Send Announcement Grouping');
+          setShowAnnouncement(false);
+        }}
+      />
     </ImageBackground>
   )
 }
@@ -193,7 +204,7 @@ const styles = StyleSheet.create({
     height: 25,
     borderRadius: 14,
     marginRight: 8,
-    resizeMode:'center'
+    resizeMode: 'center'
   },
 
   learnerText: {
@@ -203,12 +214,12 @@ const styles = StyleSheet.create({
 
   applyContainer: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios'? -32: -12,
+    bottom: Platform.OS === 'ios' ? -32 : -12,
     width: '100%',
-    height: hp(8), 
+    height: hp(8),
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent:'center'
+    justifyContent: 'center'
   },
 
   applyBtn: {
@@ -218,7 +229,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingVertical: 5,
     paddingHorizontal: 60,
-    
+
   },
 
   applyText: {

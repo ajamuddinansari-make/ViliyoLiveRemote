@@ -34,6 +34,7 @@ const ConnectScreen = ({ navigation }: any) => {
     isMicOn,
     isSpeakerOn,
     isCameraOn,
+    cameraPosition,
     toggleMic,
     toggleCamera,
     toggleSpeaker,
@@ -41,7 +42,7 @@ const ConnectScreen = ({ navigation }: any) => {
 
 
 
-  const [cameraPosition, setCameraPosition] = useState<'front' | 'environment'>('front');
+  // const [cameraPosition, setCameraPosition] = useState<'front' | 'environment'>('front');
 
 
 

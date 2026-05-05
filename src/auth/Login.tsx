@@ -12,7 +12,7 @@ const Login = ({ navigation }: any) => {
   const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password')
   const [showPassword, setShowPassword] = useState(false)
 
-
+  const [otp, setOtp] = useState('')
 
   const handleLogin = () => {
     navigation.replace('SessionList');
@@ -27,15 +27,11 @@ const Login = ({ navigation }: any) => {
 
     }
 
-
   }
 
   return (
     <ImageBackground source={ImagePath.backgroundImg} style={styles.background}>
       <SafeAreaView style={styles.container}>
-
-
-
 
         <View style={styles.card}>
 
@@ -76,7 +72,7 @@ const Login = ({ navigation }: any) => {
             </TouchableOpacity>
           </View>
 
-          {loginMethod === 'password' && (
+          {loginMethod === 'password' ? (
             <View style={styles.passwordContainer}>
               <TextInput
                 placeholder="Enter Password"
@@ -90,7 +86,6 @@ const Login = ({ navigation }: any) => {
                 style={styles.eyeIcon}
                 onPress={() => setShowPassword(!showPassword)}
               >
-                {/* <Text>{showPassword ? '👁️' : '👁️‍🗨️'}</Text> */}
                 <Ionicons
                   name={showPassword ? 'eye' : 'eye-off'}
                   size={22}
@@ -98,8 +93,17 @@ const Login = ({ navigation }: any) => {
                 />
               </TouchableOpacity>
             </View>
+          ) : (
+            <TextInput
+              placeholder="Enter OTP"
+              placeholderTextColor="#999"
+              style={styles.input}
+              value={otp}
+              onChangeText={setOtp}
+              keyboardType="number-pad"
+              maxLength={6} 
+            />
           )}
-
           <TouchableOpacity
             style={{ alignSelf: 'flex-end' }}
 
@@ -115,17 +119,10 @@ const Login = ({ navigation }: any) => {
         </View>
 
 
-
-
         <Image
           source={ImagePath.ViliyoLogo}
           style={styles.logoImg}
         />
-
-
-
-
-
 
       </SafeAreaView>
     </ImageBackground>
@@ -146,17 +143,13 @@ const styles = StyleSheet.create({
   },
   card: {
     width: wp(90),
-
     backgroundColor: '#2A2A2A80',
     borderRadius: 20,
     padding: 20,
     marginTop: hp(10)
-
-
   },
   title: {
     color: 'white',
-
     fontSize: 18,
     marginBottom: 20,
     textAlign: 'center'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,112 +15,170 @@ import Header from '../components/Header';
 import BottomControlPanel from '../components/BottomControlPanel';
 import { ImagePath } from '../assets/ImagePath';
 import { hp, wp } from '../components/Responsive';
+import AnnouncementModal from '../components/AnnouncementModal';
+import { getSessionConfiguration } from '../services/sessionApi';
 
 const SessionPlan = ({ navigation }: any) => {
-
-  const [data, setData] = useState([
-    { id: 'h1', type: 'header', title: 'SEGMENT 1' },
-    { id: '1', type: 'item', title: 'ROLE PLAY', subtitle: '<Role Play Title>', image: ImagePath.Drama },
-    { id: '2', type: 'item', title: 'ROLE PLAY', subtitle: '<Role Play Title>', image: ImagePath.Drama },
-
-    { id: 'h2', type: 'header', title: 'SEGMENT 2' },
-    { id: '3', type: 'item', title: 'CASE STUDY', subtitle: '<Case Study Title>', image: ImagePath.Search },
-    { id: '4', type: 'item', title: 'GROUP DISCUSSION', subtitle: '<GD Title>', image: ImagePath.Vector },
-    { id: '5', type: 'item', title: 'POLL', subtitle: '<Poll Title>', image: ImagePath.Poll },
-  ]);
-
-
+  const [data, setData] = useState<any[]>([]);
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [showAnnouncement, setShowAnnouncement] = useState(false);
+
+  useEffect(() => {
+    fetchSessionConfig();
+  }, []);
+
+
+ 
+
+  const fetchSessionConfig = async () => {
+    try {
+      const payload = {
+        sessionMapId: "380",
+        userId: "19",
+        userEmail: "trainer@vtt",
+        userType: "TRAINER",
+      };
+
+      const res = await getSessionConfiguration(payload);
+
+      const sessionLog = res?.data?.sessionLog;
+
+      console.log("sessionLog:", sessionLog);
+
+      const formatted = transformData(sessionLog);
+      setData(formatted);
+
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+
+
+   const transformData = (sessionLog: any = {}) => {
+    const result: any[] = [];
+
+    sessionLog?.SESSION_ACTIVITY_EXECUTION_LOG?.forEach((segment: any) => {
+
+      result.push({
+        id: `h-${segment.SEGMENT_ID}`,
+        type: 'header',
+        title: segment.SEGMENT_TITLE,
+      });
+
+
+      segment.ACTIVITIES?.forEach((activity: any) => {
+        result.push({
+          id: activity.ID.toString(),
+          type: 'item',
+          title: activity.SEGMENT_TITLE || 'ACTIVITY',
+          subtitle: activity.ACTIVITY_DATA?.ROLE_PLAY_TITLE || 'No Title',
+          duration: activity.ACTIVITY_DATA?.DURATION || '00',
+          image: ImagePath.Drama,
+        });
+      });
+    });
+
+    return result;
+  };
 
   const togglePlay = (id: string) => {
     setPlayingId(prev => (prev === id ? null : id));
   };
 
-  const Card = ({ item, drag, isActive }: any) => (
-    <TouchableOpacity
-      onLongPress={item.type === 'item' ? drag : undefined}
-      disabled={isActive || item.type === 'header'}
-      style={{ width: wp(90), alignSelf: 'center', }}
-    >
 
+  const Card = ({ item, drag, isActive }: any) => {
+    const isHeader = item.type === 'header';
 
-      {item.type === 'header' ? (
-        <Text style={styles.sectionTitle}>{item.title}</Text>
-      ) : (
+    return (
+      <TouchableOpacity
+        onLongPress={!isHeader ? drag : undefined}
+        disabled={isActive || isHeader}
+        style={{ width: wp(90), alignSelf: 'center' }}
+      >
+        {isHeader ? (
+          <Text style={styles.sectionTitle}>{item.title}</Text>
+        ) : (
+          <View style={{ flexDirection: 'row', alignItems: 'center',  marginLeft:10 }}>
+            <View style={[styles.card, isActive && styles.activeCard]}>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={styles.left}>
+                <Image source={item.image} style={styles.editBtn} />
+                <Text style={styles.time}>{item.duration} mins</Text>
+              </View>
 
+              <View style={styles.center}>
+                <Text style={styles.cardTitle}>
+                  <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
+                </Text>
+                <Text style={styles.subTitle}>{item.subtitle}</Text>
+              </View>
 
-          <View style={[styles.card, isActive && styles.activeCard]}>
+              <View style={styles.verticalLine} />
 
-            <View style={styles.left}>
-              <Image source={item.image} style={styles.editBtn} />
-              <Text style={styles.time}>120 mins</Text>
+              <View style={styles.right}>
+                <TouchableOpacity style={styles.iconBtn}>
+                  <Image source={ImagePath.Edit} style={styles.editBtn} />
+                </TouchableOpacity>
+              </View>
             </View>
 
-            <View style={styles.center}>
-              <Text style={styles.cardTitle}>
-                <Text style={{ fontWeight: 'bold' }}>{item.title} </Text>
-              </Text>
-              <Text style={styles.subTitle}>{item.subtitle}</Text>
-            </View>
-       <View style={styles.verticalLine} />
-            <View style={styles.right}>
-              <TouchableOpacity style={styles.iconBtn}>
-                <Image source={ImagePath.Edit} style={styles.editBtn} />
-              </TouchableOpacity>
-            </View>
-
+            <TouchableOpacity
+              style={[
+                styles.playBtn,
+                playingId === item.id && styles.playBtnActive,
+              ]}
+              onPress={() => togglePlay(item.id)}
+            >
+              <Image
+                source={
+                  playingId === item.id ? ImagePath.Pause : ImagePath.Play
+                }
+                style={styles.playImg}
+              />
+            </TouchableOpacity>
           </View>
-
-
-          <TouchableOpacity
-            style={[
-              styles.playBtn,
-              playingId === item.id && styles.playBtnActive,
-            ]}
-            onPress={() => togglePlay(item.id)}
-          >
-            <Image
-              source={
-                playingId === item.id
-                  ? ImagePath.Pause
-                  : ImagePath.Play
-              }
-              style={styles.playImg}
-            />
-          </TouchableOpacity>
-
-        </View>
-      )}
-    </TouchableOpacity>
-  );
+        )}
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <ImageBackground source={ImagePath.backgroundImg} style={styles.background}>
-      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <SafeAreaView style={{ flex: 1, marginBottom: -hp(10) }} edges={['top']}>
 
         <Header
           title="SESSION PLAN"
           onBackPress={() => navigation.goBack()}
         />
 
-        <DraggableFlatList
-          data={data}
-          keyExtractor={(item) => item.id}
-          onDragEnd={({ data }) => setData(data)}
-          renderItem={({ item, drag, isActive }) => (
-            <Card item={item} drag={drag} isActive={isActive} />
-          )}
-        />
-
+        <View style={{ flex: 1 }}>
+          <DraggableFlatList
+            data={data || []}
+            keyExtractor={(item) => item.id.toString()}
+            onDragEnd={({ data }) => setData(data)}
+            renderItem={({ item, drag, isActive }) => (
+              <Card item={item} drag={drag} isActive={isActive} />
+            )}
+            contentContainerStyle={{ paddingBottom: hp(15), }}
+          />
+        </View>
       </SafeAreaView>
 
       <BottomControlPanel
         onForceMute={() => console.log('Force Mute')}
         onSystemMute={() => console.log('System Mute')}
-        onAnnouncement={() => console.log('Announcement')}
+        onAnnouncement={() => setShowAnnouncement(true)}
         onConfirm={() => console.log('Confirm')}
+      />
+
+      <AnnouncementModal
+        visible={showAnnouncement}
+        onClose={() => setShowAnnouncement(false)}
+        onSend={() => {
+          console.log('Send Announcement sessionPlan');
+          setShowAnnouncement(false);
+        }}
       />
     </ImageBackground>
   );
@@ -160,7 +218,7 @@ const styles = StyleSheet.create({
   },
   left: {
     alignItems: 'center',
-    marginLeft:5
+    marginLeft: 5
   },
 
   time: {
@@ -172,10 +230,10 @@ const styles = StyleSheet.create({
   center: {
     flex: 1,
     paddingHorizontal: 10,
-    alignItems:'flex-end',
-    borderRightWidth:1,
-    borderColor:'#fff',
-    marginRight:5
+    alignItems: 'flex-end',
+    borderRightWidth: 1,
+    borderColor: '#fff',
+    marginRight: 5
   },
 
   cardTitle: {
@@ -218,7 +276,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 10,
     marginBottom: 5,
-    marginTop:5
+    marginTop: 5
   },
 
   playImg: {
@@ -226,10 +284,10 @@ const styles = StyleSheet.create({
     height: hp(5),
     resizeMode: 'contain',
   },
-  verticalLine:{
-    width:1, 
-    height:50,
-    color:'red'
+  verticalLine: {
+    width: 1,
+    height: 50,
+    color: 'red'
 
   }
 });

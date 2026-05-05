@@ -177,29 +177,30 @@ const AvSetting = ({ navigation }: any) => {
                     title="AV SETTINGS"
                     onBackPress={() => navigation.goBack()}
                 />
+                {isRemoteAccessAllowed && (
+                    <View style={{ flex: 1 }}>
 
-                <View style={{ flex: 1 }}>
 
-                  
-                    <TrainerConsole
-                        title="Trainer’s Console"
-                        streamURL={localStream?.toURL()}
-                        isCameraOn={isCameraOn}
-                        isMicOn={isMicOn}
-                        isSpeakerOn={isSpeakerOn}
-                        cameraPosition={cameraPosition}
-                        currentEffect={currentEffect}
-                        onToggleCamera={toggleCamera}
-                        onToggleMic={toggleMic}
-                        onToggleSpeaker={toggleSpeaker}
-                        onFlipCamera={toggleFlip}
-                    />
+                        <TrainerConsole
+                            title="Trainer’s Console"
+                            streamURL={localStream?.toURL()}
+                            isCameraOn={isCameraOn}
+                            isMicOn={isMicOn}
+                            isSpeakerOn={isSpeakerOn}
+                            cameraPosition={cameraPosition}
+                            currentEffect={currentEffect}
+                            onToggleCamera={toggleCamera}
+                            onToggleMic={toggleMic}
+                            onToggleSpeaker={toggleSpeaker}
+                            onFlipCamera={toggleFlip}
+                        />
 
-                    {isRemoteAccessAllowed && (
+
                         <TrainerCard title="Trainer’s Remote" />
-                    )}
 
-                </View>
+
+                    </View>
+                )} 
 
             </SafeAreaView>
             <BottomControlPanel
